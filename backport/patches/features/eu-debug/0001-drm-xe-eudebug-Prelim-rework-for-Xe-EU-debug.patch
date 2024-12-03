@@ -1,7 +1,7 @@
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: Dominik Grzegorzek <dominik.grzegorzek@intel.com>
 Date: Mon, 2 Dec 2024 10:12:33 +0530
-Subject: [PATCH] drm/xe/eudebug: Prelim rework for Xe EU debug
+Subject: drm/xe/eudebug: Prelim rework for Xe EU debug
 
 Moved all xe_eudebug declarations and definitions to xe_drm_prelim.h
 Removed xe_drm_eudebug.h Moved eudebug related files into prelim/
@@ -296,7 +296,7 @@ diff --git a/drivers/gpu/drm/xe/xe_eudebug.c b/drivers/gpu/drm/xe/prelim/xe_eude
 similarity index 88%
 rename from drivers/gpu/drm/xe/xe_eudebug.c
 rename to drivers/gpu/drm/xe/prelim/xe_eudebug.c
-index 4f62af63b..e2a492e71 100644
+index 8a9fb3c34..3b5d7cc27 100644
 --- a/drivers/gpu/drm/xe/xe_eudebug.c
 +++ b/drivers/gpu/drm/xe/prelim/xe_eudebug.c
 @@ -256,7 +256,7 @@ static void xe_eudebug_free(struct kref *ref)
@@ -663,7 +663,7 @@ index 4f62af63b..e2a492e71 100644
  out_exec_queue_put:
  	xe_exec_queue_put(q);
  
-@@ -2062,14 +2062,14 @@ static int check_attn_mcr(struct xe_gt *gt, void *data,
+@@ -2061,14 +2061,14 @@ static int check_attn_mcr(struct xe_gt *gt, void *data,
  	struct xe_eudebug *d = iter->debugger;
  	unsigned int row;
  
@@ -680,7 +680,7 @@ index 4f62af63b..e2a492e71 100644
  			return -EIO;
  
  		memcpy(&val, &iter->bits[iter->i], sizeof(val));
-@@ -2095,14 +2095,14 @@ static int clear_attn_mcr(struct xe_gt *gt, void *data,
+@@ -2094,14 +2094,14 @@ static int clear_attn_mcr(struct xe_gt *gt, void *data,
  	struct xe_eudebug *d = iter->debugger;
  	unsigned int row;
  
@@ -697,7 +697,7 @@ index 4f62af63b..e2a492e71 100644
  			return -EIO;
  
  		memcpy(&val, &iter->bits[iter->i], sizeof(val));
-@@ -2157,14 +2157,14 @@ static int xe_eu_control_resume(struct xe_eudebug *d,
+@@ -2156,14 +2156,14 @@ static int xe_eu_control_resume(struct xe_eudebug *d,
  	 * in order to avoid the EOT hang on PVC.
  	 */
  	if (GRAPHICS_VERx100(d->xe) == 1260) {
@@ -714,7 +714,7 @@ index 4f62af63b..e2a492e71 100644
  	return 0;
  }
  
-@@ -2198,7 +2198,7 @@ static int xe_eu_control_stopped(struct xe_eudebug *d,
+@@ -2197,7 +2197,7 @@ static int xe_eu_control_stopped(struct xe_eudebug *d,
  
  	xe_exec_queue_put(active);
  
@@ -723,7 +723,7 @@ index 4f62af63b..e2a492e71 100644
  }
  
  static struct xe_eudebug_eu_control_ops eu_control = {
-@@ -2211,7 +2211,7 @@ static void discovery_work_fn(struct work_struct *work);
+@@ -2210,7 +2210,7 @@ static void discovery_work_fn(struct work_struct *work);
  
  static int
  xe_eudebug_connect(struct xe_device *xe,
@@ -732,7 +732,7 @@ index 4f62af63b..e2a492e71 100644
  {
  	const u64 known_open_flags = 0;
  	unsigned long f_flags = 0;
-@@ -2227,10 +2227,10 @@ xe_eudebug_connect(struct xe_device *xe,
+@@ -2226,10 +2226,10 @@ xe_eudebug_connect(struct xe_device *xe,
  	if (param->flags & ~known_open_flags)
  		return -EINVAL;
  
@@ -745,7 +745,7 @@ index 4f62af63b..e2a492e71 100644
  
  	d = kzalloc(sizeof(*d), GFP_KERNEL);
  	if (!d)
-@@ -2287,12 +2287,12 @@ xe_eudebug_connect(struct xe_device *xe,
+@@ -2286,12 +2286,12 @@ xe_eudebug_connect(struct xe_device *xe,
  	return err;
  }
  
@@ -760,7 +760,7 @@ index 4f62af63b..e2a492e71 100644
  
  	lockdep_assert_held(&xe->eudebug.discovery_lock);
  
-@@ -2396,14 +2396,14 @@ static int xe_eudebug_enable(struct xe_device *xe, bool enable)
+@@ -2395,14 +2395,14 @@ static int xe_eudebug_enable(struct xe_device *xe, bool enable)
  	return 0;
  }
  
@@ -777,7 +777,7 @@ index 4f62af63b..e2a492e71 100644
  				    const char *buf, size_t count)
  {
  	struct xe_device *xe = pdev_to_xe_device(to_pci_dev(dev));
-@@ -2421,16 +2421,16 @@ static ssize_t enable_eudebug_store(struct device *dev, struct device_attribute
+@@ -2420,16 +2420,16 @@ static ssize_t enable_eudebug_store(struct device *dev, struct device_attribute
  	return count;
  }
  
@@ -797,7 +797,7 @@ index 4f62af63b..e2a492e71 100644
  {
  	struct device *dev = xe->drm.dev;
  	int ret;
-@@ -2449,7 +2449,7 @@ void xe_eudebug_init(struct xe_device *xe)
+@@ -2448,7 +2448,7 @@ void xe_eudebug_init(struct xe_device *xe)
  	if (!xe->eudebug.available)
  		return;
  
@@ -806,7 +806,7 @@ index 4f62af63b..e2a492e71 100644
  	if (ret)
  		drm_warn(&xe->drm, "eudebug sysfs init failed: %d, debugger unavailable\n", ret);
  	else
-@@ -2458,7 +2458,7 @@ void xe_eudebug_init(struct xe_device *xe)
+@@ -2457,7 +2457,7 @@ void xe_eudebug_init(struct xe_device *xe)
  	xe->eudebug.available = ret == 0;
  }
  
@@ -815,7 +815,7 @@ index 4f62af63b..e2a492e71 100644
  {
  	attention_scan_cancel(xe);
  	xe_assert(xe, list_empty_careful(&xe->eudebug.list));
-@@ -2479,14 +2479,14 @@ static int send_open_event(struct xe_eudebug *d, u32 flags, const u64 handle,
+@@ -2478,14 +2478,14 @@ static int send_open_event(struct xe_eudebug *d, u32 flags, const u64 handle,
  	if (XE_WARN_ON((long)handle >= INT_MAX))
  		return -EINVAL;
  
@@ -832,7 +832,7 @@ index 4f62af63b..e2a492e71 100644
  		     client_handle, handle);
  
  	return xe_eudebug_queue_event(d, event);
-@@ -2499,7 +2499,7 @@ static int client_create_event(struct xe_eudebug *d, struct xe_file *xef)
+@@ -2498,7 +2498,7 @@ static int client_create_event(struct xe_eudebug *d, struct xe_file *xef)
  
  	ret = xe_eudebug_add_handle(d, XE_EUDEBUG_RES_TYPE_CLIENT, xef, &seqno);
  	if (ret > 0)
@@ -841,7 +841,7 @@ index 4f62af63b..e2a492e71 100644
  				      ret, seqno);
  
  	return ret;
-@@ -2513,7 +2513,7 @@ static int client_destroy_event(struct xe_eudebug *d, struct xe_file *xef)
+@@ -2512,7 +2512,7 @@ static int client_destroy_event(struct xe_eudebug *d, struct xe_file *xef)
  	ret = xe_eudebug_remove_handle(d, XE_EUDEBUG_RES_TYPE_CLIENT,
  				       xef, &seqno);
  	if (ret > 0)
@@ -850,7 +850,7 @@ index 4f62af63b..e2a492e71 100644
  				      ret, seqno);
  
  	return ret;
-@@ -2522,10 +2522,10 @@ static int client_destroy_event(struct xe_eudebug *d, struct xe_file *xef)
+@@ -2521,10 +2521,10 @@ static int client_destroy_event(struct xe_eudebug *d, struct xe_file *xef)
  #define xe_eudebug_event_put(_d, _err) ({ \
  	if ((_err)) \
  		xe_eudebug_disconnect((_d), (_err)); \
@@ -863,7 +863,7 @@ index 4f62af63b..e2a492e71 100644
  {
  	struct xe_eudebug *d;
  
-@@ -2539,27 +2539,27 @@ void xe_eudebug_file_open(struct xe_file *xef)
+@@ -2538,27 +2538,27 @@ void xe_eudebug_file_open(struct xe_file *xef)
  	list_add_tail(&xef->eudebug.client_link, &xef->xe->clients.list);
  	spin_unlock(&xef->xe->clients.lock);
  
@@ -896,7 +896,7 @@ index 4f62af63b..e2a492e71 100644
  	mutex_unlock(&xef->eudebug.metadata.lock);
  
  	xa_destroy(&xef->eudebug.metadata.xa);
-@@ -2580,15 +2580,15 @@ static int send_vm_event(struct xe_eudebug *d, u32 flags,
+@@ -2579,15 +2579,15 @@ static int send_vm_event(struct xe_eudebug *d, u32 flags,
  	struct xe_eudebug_event *event;
  	struct xe_eudebug_event_vm *e;
  
@@ -915,7 +915,7 @@ index 4f62af63b..e2a492e71 100644
  
  	return xe_eudebug_queue_event(d, event);
  }
-@@ -2613,7 +2613,7 @@ static int vm_create_event(struct xe_eudebug *d,
+@@ -2612,7 +2612,7 @@ static int vm_create_event(struct xe_eudebug *d,
  	if (h_vm <= 0)
  		return h_vm;
  
@@ -924,7 +924,7 @@ index 4f62af63b..e2a492e71 100644
  
  	return ret;
  }
-@@ -2640,31 +2640,31 @@ static int vm_destroy_event(struct xe_eudebug *d,
+@@ -2639,31 +2639,31 @@ static int vm_destroy_event(struct xe_eudebug *d,
  	if (h_vm <= 0)
  		return h_vm;
  
@@ -961,7 +961,7 @@ index 4f62af63b..e2a492e71 100644
  	if (!d)
  		return;
  
-@@ -2698,19 +2698,19 @@ static int send_exec_queue_event(struct xe_eudebug *d, u32 flags,
+@@ -2697,19 +2697,19 @@ static int send_exec_queue_event(struct xe_eudebug *d, u32 flags,
  	if (!exec_queue_class_is_tracked(class))
  		return -EINVAL;
  
@@ -987,7 +987,7 @@ index 4f62af63b..e2a492e71 100644
  
  	memcpy(e->lrc_handle, lrc_handles, width);
  
-@@ -2728,20 +2728,20 @@ static int send_exec_queue_placements_event(struct xe_eudebug *d,
+@@ -2727,20 +2727,20 @@ static int send_exec_queue_placements_event(struct xe_eudebug *d,
  	struct xe_eudebug_event *event;
  
  	event = xe_eudebug_create_event(d,
@@ -1015,7 +1015,7 @@ index 4f62af63b..e2a492e71 100644
  		     num_placements);
  
  	memcpy(e->instances, instances, num_placements * sizeof(*instances));
-@@ -2839,7 +2839,7 @@ static int exec_queue_create_events(struct xe_eudebug *d,
+@@ -2838,7 +2838,7 @@ static int exec_queue_create_events(struct xe_eudebug *d,
  	 * we disconnect
  	 */
  
@@ -1024,7 +1024,7 @@ index 4f62af63b..e2a492e71 100644
  				  h_c, h_vm, h_queue, q->class,
  				  q->width, h_lrc, seqno);
  
-@@ -2893,33 +2893,33 @@ static int exec_queue_destroy_event(struct xe_eudebug *d,
+@@ -2892,33 +2892,33 @@ static int exec_queue_destroy_event(struct xe_eudebug *d,
  		h_lrc[i] = ret;
  	}
  
@@ -1063,7 +1063,7 @@ index 4f62af63b..e2a492e71 100644
  	if (!d)
  		return;
  
-@@ -2944,7 +2944,7 @@ static int xe_eudebug_queue_bind_event(struct xe_eudebug *d,
+@@ -2943,7 +2943,7 @@ static int xe_eudebug_queue_bind_event(struct xe_eudebug *d,
  	spin_lock(&vm->eudebug.lock);
  	list_add_tail(&env->link, &vm->eudebug.events);
  
@@ -1072,7 +1072,7 @@ index 4f62af63b..e2a492e71 100644
  		++vm->eudebug.ops;
  	spin_unlock(&vm->eudebug.lock);
  
-@@ -2961,20 +2961,20 @@ static int queue_vm_bind_event(struct xe_eudebug *d,
+@@ -2960,20 +2960,20 @@ static int queue_vm_bind_event(struct xe_eudebug *d,
  	struct xe_eudebug_event_vm_bind *e;
  	struct xe_eudebug_event *event;
  	const u32 sz = sizeof(*e);
@@ -1099,7 +1099,7 @@ index 4f62af63b..e2a492e71 100644
  
  	/* If in discovery, no need to collect ops */
  	if (!completion_done(&d->discovery)) {
-@@ -3018,17 +3018,17 @@ static int vm_bind_op_event(struct xe_eudebug *d,
+@@ -3017,17 +3017,17 @@ static int vm_bind_op_event(struct xe_eudebug *d,
  
  	*op_seqno = atomic_long_inc_return(&d->events.seqno);
  
@@ -1122,7 +1122,7 @@ index 4f62af63b..e2a492e71 100644
  
  	/* If in discovery, no need to collect ops */
  	if (!completion_done(&d->discovery))
-@@ -3051,18 +3051,18 @@ static int vm_bind_op_metadata_event(struct xe_eudebug *d,
+@@ -3050,18 +3050,18 @@ static int vm_bind_op_metadata_event(struct xe_eudebug *d,
  
  	seqno = atomic_long_inc_return(&d->events.seqno);
  
@@ -1145,7 +1145,7 @@ index 4f62af63b..e2a492e71 100644
  		     metadata_cookie, metadata_cookie);
  
  	/* If in discovery, no need to collect ops */
-@@ -3077,17 +3077,17 @@ static int vm_bind_op_metadata_count(struct xe_eudebug *d,
+@@ -3076,17 +3076,17 @@ static int vm_bind_op_metadata_count(struct xe_eudebug *d,
  				     struct list_head *debug_metadata)
  {
  	struct xe_vma_debug_metadata *metadata;
@@ -1166,7 +1166,7 @@ index 4f62af63b..e2a492e71 100644
  		}
  
  		if (!mdata || h_m < 0) {
-@@ -3119,15 +3119,15 @@ static int vm_bind_op_metadata(struct xe_eudebug *d, struct xe_vm *vm,
+@@ -3118,15 +3118,15 @@ static int vm_bind_op_metadata(struct xe_eudebug *d, struct xe_vm *vm,
  	if (!debug_metadata)
  		return 0;
  
@@ -1186,7 +1186,7 @@ index 4f62af63b..e2a492e71 100644
  		}
  
  		if (!mdata || h_m < 0) {
-@@ -3219,21 +3219,21 @@ static int vm_bind_ufence_event(struct xe_eudebug *d,
+@@ -3218,21 +3218,21 @@ static int vm_bind_ufence_event(struct xe_eudebug *d,
  	struct xe_eudebug_event *event;
  	struct xe_eudebug_event_vm_bind_ufence *e;
  	const u32 sz = sizeof(*e);
@@ -1212,7 +1212,7 @@ index 4f62af63b..e2a492e71 100644
  		     e, vm_bind_ref_seqno, ufence->eudebug.bind_ref_seqno);
  
  	ret = xe_eudebug_track_ufence(d, ufence, seqno);
-@@ -3243,7 +3243,7 @@ static int vm_bind_ufence_event(struct xe_eudebug *d,
+@@ -3242,7 +3242,7 @@ static int vm_bind_ufence_event(struct xe_eudebug *d,
  	return ret;
  }
  
@@ -1221,7 +1221,7 @@ index 4f62af63b..e2a492e71 100644
  {
  	INIT_LIST_HEAD(&vm->eudebug.events);
  	spin_lock_init(&vm->eudebug.lock);
-@@ -3251,7 +3251,7 @@ void xe_eudebug_vm_init(struct xe_vm *vm)
+@@ -3250,7 +3250,7 @@ void xe_eudebug_vm_init(struct xe_vm *vm)
  	vm->eudebug.ref_seqno = 0;
  }
  
@@ -1230,7 +1230,7 @@ index 4f62af63b..e2a492e71 100644
  {
  	struct xe_eudebug *d;
  	u64 seqno = 0;
-@@ -3260,7 +3260,7 @@ void xe_eudebug_vm_bind_start(struct xe_vm *vm)
+@@ -3259,7 +3259,7 @@ void xe_eudebug_vm_bind_start(struct xe_vm *vm)
  	if (!xe_vm_in_lr_mode(vm))
  		return;
  
@@ -1239,7 +1239,7 @@ index 4f62af63b..e2a492e71 100644
  	if (!d)
  		return;
  
-@@ -3285,10 +3285,10 @@ void xe_eudebug_vm_bind_start(struct xe_vm *vm)
+@@ -3284,10 +3284,10 @@ void xe_eudebug_vm_bind_start(struct xe_vm *vm)
  	vm->eudebug.ops = 0;
  	spin_unlock(&vm->eudebug.lock);
  
@@ -1252,7 +1252,7 @@ index 4f62af63b..e2a492e71 100644
  			       struct drm_gpuva_ops *ops)
  {
  	struct xe_eudebug *d;
-@@ -3304,7 +3304,7 @@ void xe_eudebug_vm_bind_op_add(struct xe_vm *vm, u32 op, u64 addr, u64 range,
+@@ -3303,7 +3303,7 @@ void xe_eudebug_vm_bind_op_add(struct xe_vm *vm, u32 op, u64 addr, u64 range,
  	{
  		struct drm_gpuva_op *__op;
  
@@ -1261,7 +1261,7 @@ index 4f62af63b..e2a492e71 100644
  
  		/* OP_MAP will be last and singleton */
  		drm_gpuva_for_each_op(__op, ops) {
-@@ -3317,7 +3317,7 @@ void xe_eudebug_vm_bind_op_add(struct xe_vm *vm, u32 op, u64 addr, u64 range,
+@@ -3316,7 +3316,7 @@ void xe_eudebug_vm_bind_op_add(struct xe_vm *vm, u32 op, u64 addr, u64 range,
  	}
  	case DRM_XE_VM_BIND_OP_UNMAP:
  	case DRM_XE_VM_BIND_OP_UNMAP_ALL:
@@ -1270,7 +1270,7 @@ index 4f62af63b..e2a492e71 100644
  		break;
  	default:
  		flags = 0;
-@@ -3327,7 +3327,7 @@ void xe_eudebug_vm_bind_op_add(struct xe_vm *vm, u32 op, u64 addr, u64 range,
+@@ -3326,7 +3326,7 @@ void xe_eudebug_vm_bind_op_add(struct xe_vm *vm, u32 op, u64 addr, u64 range,
  	if (!flags)
  		return;
  
@@ -1279,7 +1279,7 @@ index 4f62af63b..e2a492e71 100644
  	if (!d)
  		return;
  
-@@ -3362,7 +3362,7 @@ static void fill_vm_bind_fields(struct xe_vm *vm,
+@@ -3361,7 +3361,7 @@ static void fill_vm_bind_fields(struct xe_vm *vm,
  	struct xe_eudebug_event_vm_bind *eb = cast_event(eb, e);
  
  	eb->flags = ufence ?
@@ -1288,7 +1288,7 @@ index 4f62af63b..e2a492e71 100644
  	eb->num_binds = bind_ops;
  }
  
-@@ -3372,14 +3372,14 @@ static void fill_vm_bind_op_fields(struct xe_vm *vm,
+@@ -3371,14 +3371,14 @@ static void fill_vm_bind_op_fields(struct xe_vm *vm,
  {
  	struct xe_eudebug_event_vm_bind_op *op;
  
@@ -1305,7 +1305,7 @@ index 4f62af63b..e2a492e71 100644
  {
  	struct xe_eudebug_event *e;
  	struct xe_eudebug *d;
-@@ -3402,7 +3402,7 @@ void xe_eudebug_vm_bind_end(struct xe_vm *vm, bool has_ufence, int bind_err)
+@@ -3401,7 +3401,7 @@ void xe_eudebug_vm_bind_end(struct xe_vm *vm, bool has_ufence, int bind_err)
  
  	d = NULL;
  	if (!bind_err && ref) {
@@ -1314,7 +1314,7 @@ index 4f62af63b..e2a492e71 100644
  		if (d) {
  			if (bind_ops) {
  				fill_vm_bind_fields(vm, e, has_ufence, bind_ops);
-@@ -3411,7 +3411,7 @@ void xe_eudebug_vm_bind_end(struct xe_vm *vm, bool has_ufence, int bind_err)
+@@ -3410,7 +3410,7 @@ void xe_eudebug_vm_bind_end(struct xe_vm *vm, bool has_ufence, int bind_err)
  				 * If there was no ops we are interested in,
  				 * we can omit the whole sequence
  				 */
@@ -1323,7 +1323,7 @@ index 4f62af63b..e2a492e71 100644
  				d = NULL;
  			}
  		}
-@@ -3428,7 +3428,7 @@ void xe_eudebug_vm_bind_end(struct xe_vm *vm, bool has_ufence, int bind_err)
+@@ -3427,7 +3427,7 @@ void xe_eudebug_vm_bind_end(struct xe_vm *vm, bool has_ufence, int bind_err)
  
  		if (err) {
  			xe_eudebug_disconnect(d, err);
@@ -1332,7 +1332,7 @@ index 4f62af63b..e2a492e71 100644
  			d = NULL;
  		}
  
-@@ -3440,10 +3440,10 @@ void xe_eudebug_vm_bind_end(struct xe_vm *vm, bool has_ufence, int bind_err)
+@@ -3439,10 +3439,10 @@ void xe_eudebug_vm_bind_end(struct xe_vm *vm, bool has_ufence, int bind_err)
  	}
  
  	if (d)
@@ -1345,7 +1345,7 @@ index 4f62af63b..e2a492e71 100644
  {
  	struct xe_eudebug *d;
  	int err;
-@@ -3468,23 +3468,23 @@ static int send_debug_metadata_event(struct xe_eudebug *d, u32 flags,
+@@ -3467,23 +3467,23 @@ static int send_debug_metadata_event(struct xe_eudebug *d, u32 flags,
  	struct xe_eudebug_event *event;
  	struct xe_eudebug_event_metadata *e;
  
@@ -1375,7 +1375,7 @@ index 4f62af63b..e2a492e71 100644
  {
  	int h_c, h_m;
  	u64 seqno;
-@@ -3497,12 +3497,12 @@ static int debug_metadata_create_event(struct xe_eudebug *d,
+@@ -3496,12 +3496,12 @@ static int debug_metadata_create_event(struct xe_eudebug *d,
  	if (h_m <= 0)
  		return h_m;
  
@@ -1390,7 +1390,7 @@ index 4f62af63b..e2a492e71 100644
  {
  	int h_c, h_m;
  	u64 seqno;
-@@ -3515,26 +3515,26 @@ static int debug_metadata_destroy_event(struct xe_eudebug *d,
+@@ -3514,26 +3514,26 @@ static int debug_metadata_destroy_event(struct xe_eudebug *d,
  	if (h_m < 0)
  		return h_m;
  
@@ -1422,7 +1422,7 @@ index 4f62af63b..e2a492e71 100644
  	if (!d)
  		return;
  
-@@ -3570,7 +3570,7 @@ static int vm_discover_binds(struct xe_eudebug *d, struct xe_vm *vm)
+@@ -3569,7 +3569,7 @@ static int vm_discover_binds(struct xe_eudebug *d, struct xe_vm *vm)
  		if (send_ops >= num_ops)
  			break;
  
@@ -1431,7 +1431,7 @@ index 4f62af63b..e2a492e71 100644
  				 xe_vma_start(vma), xe_vma_size(vma),
  				 &vma->eudebug.metadata.list);
  		if (err)
-@@ -3584,7 +3584,7 @@ static int vm_discover_binds(struct xe_eudebug *d, struct xe_vm *vm)
+@@ -3583,7 +3583,7 @@ static int vm_discover_binds(struct xe_eudebug *d, struct xe_vm *vm)
  
  static int discover_client(struct xe_eudebug *d, struct xe_file *xef)
  {
@@ -1440,7 +1440,7 @@ index 4f62af63b..e2a492e71 100644
  	struct xe_exec_queue *q;
  	struct xe_vm *vm;
  	unsigned long i;
-@@ -3667,7 +3667,7 @@ static void discovery_work_fn(struct work_struct *work)
+@@ -3666,7 +3666,7 @@ static void discovery_work_fn(struct work_struct *work)
  
  	if (xe_eudebug_detached(d)) {
  		complete_all(&d->discovery);
@@ -1449,7 +1449,7 @@ index 4f62af63b..e2a492e71 100644
  		return;
  	}
  
-@@ -3685,10 +3685,10 @@ static void discovery_work_fn(struct work_struct *work)
+@@ -3684,10 +3684,10 @@ static void discovery_work_fn(struct work_struct *work)
  
  	send_queued_pagefault(d, false);
  
@@ -1462,7 +1462,7 @@ index 4f62af63b..e2a492e71 100644
  			    struct xe_file *xef,
  			    struct xe_vm *vm)
  {
-@@ -3708,19 +3708,19 @@ void xe_eudebug_ufence_init(struct xe_user_fence *ufence,
+@@ -3707,19 +3707,19 @@ void xe_eudebug_ufence_init(struct xe_user_fence *ufence,
  	ufence->eudebug.signalled_seqno = 0;
  
  	if (bind_ref) {
@@ -1485,7 +1485,7 @@ index 4f62af63b..e2a492e71 100644
  	ufence->eudebug.debugger = NULL;
  }
  
-@@ -4035,7 +4035,7 @@ static int xe_eudebug_vm_release(struct inode *inode, struct file *file)
+@@ -4033,7 +4033,7 @@ static int xe_eudebug_vm_release(struct inode *inode, struct file *file)
  
  	xe_vm_put(vmf->vm);
  	xe_file_put(vmf->xef);
@@ -1494,7 +1494,7 @@ index 4f62af63b..e2a492e71 100644
  	drm_dev_put(&d->xe->drm);
  
  	kfree(vmf);
-@@ -4056,8 +4056,8 @@ static const struct file_operations vm_fops = {
+@@ -4054,8 +4054,8 @@ static const struct file_operations vm_fops = {
  static long
  xe_eudebug_vm_open_ioctl(struct xe_eudebug *d, unsigned long arg)
  {
@@ -1505,7 +1505,7 @@ index 4f62af63b..e2a492e71 100644
  	struct xe_device * const xe = d->xe;
  	struct vm_file *vmf = NULL;
  	struct xe_file *xef;
-@@ -4066,10 +4066,10 @@ xe_eudebug_vm_open_ioctl(struct xe_eudebug *d, unsigned long arg)
+@@ -4064,10 +4064,10 @@ xe_eudebug_vm_open_ioctl(struct xe_eudebug *d, unsigned long arg)
  	long ret = 0;
  	int fd;
  
@@ -1518,7 +1518,7 @@ index 4f62af63b..e2a492e71 100644
  		return -EINVAL;
  
  	if (XE_IOCTL_DBG(xe, copy_from_user(&param, (void __user *)arg, sizeof(param))))
-@@ -4143,7 +4143,7 @@ xe_eudebug_vm_open_ioctl(struct xe_eudebug *d, unsigned long arg)
+@@ -4141,7 +4141,7 @@ xe_eudebug_vm_open_ioctl(struct xe_eudebug *d, unsigned long arg)
  
  out_fd_put:
  	put_unused_fd(fd);
@@ -1527,7 +1527,7 @@ index 4f62af63b..e2a492e71 100644
  out_free:
  	kfree(vmf);
  out_vm_put:
-@@ -4171,7 +4171,7 @@ static int queue_pagefault(struct xe_gt *gt, struct xe_eudebug_pagefault *pf)
+@@ -4169,7 +4169,7 @@ static int queue_pagefault(struct xe_gt *gt, struct xe_eudebug_pagefault *pf)
  	list_add_tail(&pf->list, &d->pagefaults);
  	mutex_unlock(&d->pf_lock);
  
@@ -1536,7 +1536,7 @@ index 4f62af63b..e2a492e71 100644
  
  	return 0;
  }
-@@ -4237,7 +4237,7 @@ static struct pagefault_fence *pagefault_fence_create(void)
+@@ -4235,7 +4235,7 @@ static struct pagefault_fence *pagefault_fence_create(void)
  }
  
  struct xe_eudebug_pagefault *
@@ -1545,7 +1545,7 @@ index 4f62af63b..e2a492e71 100644
  			    u8 fault_type, u8 fault_level, u8 access_type)
  {
  	struct pagefault_fence *pf_fence;
-@@ -4313,7 +4313,7 @@ xe_eudebug_pagefault_create(struct xe_gt *gt, struct xe_vm *vm, u64 page_addr,
+@@ -4311,7 +4311,7 @@ xe_eudebug_pagefault_create(struct xe_gt *gt, struct xe_vm *vm, u64 page_addr,
  
  	INIT_LIST_HEAD(&pf->list);
  
@@ -1554,7 +1554,7 @@ index 4f62af63b..e2a492e71 100644
  
  	/* Halt on next thread dispatch */
  	while (!(td_ctl & TD_CTL_FORCE_EXTERNAL_HALT)) {
-@@ -4336,11 +4336,11 @@ xe_eudebug_pagefault_create(struct xe_gt *gt, struct xe_vm *vm, u64 page_addr,
+@@ -4334,11 +4334,11 @@ xe_eudebug_pagefault_create(struct xe_gt *gt, struct xe_vm *vm, u64 page_addr,
  		td_ctl = xe_gt_mcr_unicast_read_any(gt, TD_CTL);
  	}
  
@@ -1569,16 +1569,16 @@ index 4f62af63b..e2a492e71 100644
  	 * or handle_pagefault()
  	 */
  	pf->q = q;
-@@ -4351,7 +4351,7 @@ xe_eudebug_pagefault_create(struct xe_gt *gt, struct xe_vm *vm, u64 page_addr,
+@@ -4349,7 +4349,7 @@ xe_eudebug_pagefault_create(struct xe_gt *gt, struct xe_vm *vm, u64 page_addr,
  	pf->fault.access = access_type;
  
- 	xe_force_wake_put(gt_to_fw(gt), fw_ref);
+ 	xe_force_wake_put(gt_to_fw(gt),  q->hwe->domain);
 -	xe_eudebug_put(d);
 +	prelim_xe_eudebug_put(d);
  
  	return pf;
  
-@@ -4364,16 +4364,16 @@ xe_eudebug_pagefault_create(struct xe_gt *gt, struct xe_vm *vm, u64 page_addr,
+@@ -4362,16 +4362,16 @@ xe_eudebug_pagefault_create(struct xe_gt *gt, struct xe_vm *vm, u64 page_addr,
  err_put_exec_queue:
  	xe_exec_queue_put(q);
  err_put_eudebug:
@@ -1599,7 +1599,7 @@ index 4f62af63b..e2a492e71 100644
  
  	if (!xe_eu_attentions_xor_count(&pf->attentions.after,
  					&pf->attentions.resolved))
-@@ -4381,7 +4381,7 @@ xe_eudebug_pagefault_process(struct xe_gt *gt, struct xe_eudebug_pagefault *pf)
+@@ -4379,7 +4379,7 @@ xe_eudebug_pagefault_process(struct xe_gt *gt, struct xe_eudebug_pagefault *pf)
  }
  
  void
@@ -1608,7 +1608,7 @@ index 4f62af63b..e2a492e71 100644
  			     struct xe_eudebug_pagefault *pf, bool send_event)
  {
  	struct xe_eudebug *d;
-@@ -4422,7 +4422,7 @@ xe_eudebug_pagefault_destroy(struct xe_gt *gt, struct xe_vm *vm,
+@@ -4420,7 +4420,7 @@ xe_eudebug_pagefault_destroy(struct xe_gt *gt, struct xe_vm *vm,
  		d->pf_fence = NULL;
  		mutex_unlock(&d->eu_lock);
  
@@ -1748,7 +1748,7 @@ diff --git a/drivers/gpu/drm/xe/xe_gt_debug.c b/drivers/gpu/drm/xe/prelim/xe_gt_
 similarity index 77%
 rename from drivers/gpu/drm/xe/xe_gt_debug.c
 rename to drivers/gpu/drm/xe/prelim/xe_gt_debug.c
-index 5dcc12ea5..1a17a8dd2 100644
+index d86d1f4df..9fda277f0 100644
 --- a/drivers/gpu/drm/xe/xe_gt_debug.c
 +++ b/drivers/gpu/drm/xe/prelim/xe_gt_debug.c
 @@ -14,7 +14,7 @@
