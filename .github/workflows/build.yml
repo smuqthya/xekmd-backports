@@ -2,7 +2,7 @@ name: CI
 
 on:
   pull_request:
-    branches: [ "kernel-backport/main", "kernel-backport/main_6.14" ]
+    branches: [ "kernel-backport/main", "kernel-backport/main_6.14", "kernel-backport/main_ghaction_checkcherrypick" ]
 
   workflow_dispatch:
 
