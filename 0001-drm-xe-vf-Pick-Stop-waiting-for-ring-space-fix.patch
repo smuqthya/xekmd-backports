@@ -4,7 +4,7 @@ Date: Mon, 15 Dec 2025 13:39:32 +0530
 Subject: [PATCH] drm/xe/vf:Pick Stop waiting for ring space fix
 
 Pick drm/xe/vf: Stop waiting for ring space on VF post migration
-recovery fix
+recovery fixi d
 
 Signed-off-by: S A Muqthyar Ahmed <syed.abdul.muqthyar.ahmed@intel.com>
 ---
